@@ -7,9 +7,9 @@ Gameplay is handled through the console.
 
 North, East, South, West - Will move the player in the corresponding direction both on the overworld and in a dungeon
 
-Equip x - Will allow you to equip 'x' item from your inventory. Will automatically bind to the proper slot depending on type
+Equip:x - Will allow you to equip 'x' item from your inventory. Will automatically bind to the proper slot depending on type
 
-Use x - Will allow you to use an item in your inventory and activate your intended effects
+Use:x - Will allow you to use an item in your inventory and activate your intended effects
 
 Search - Searches a room for loot, success will depend on your dexterity attribute
 
