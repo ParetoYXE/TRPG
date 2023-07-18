@@ -9,11 +9,11 @@ player = {
     'dex':0,
     'wis':0,
     'hp':0,
-    'food':10,
+    'food':4,
     'gold':10,
     'name':'',
-    'pos':14,
-    'inventory':{},
+    'pos':74,
+    'inventory':{'bag of rations':{'name':'bag of rations', 'effect': '3 food'}},
     'weapon':{'name':'fist','damage':'1'},
     'armor':{}
 }
@@ -77,7 +77,7 @@ dungeons = {
             0,0,0,0,0,0,0,0,0,0,
             0,0,0,0,0,0,0,0,0,0,
         ],
-        'randomEncounters':[['lich servator',00]],
+        'randomEncounters':[['lich servator',30]],
 
         'rooms':{
             12: {
@@ -91,6 +91,21 @@ dungeons = {
                 'exits': 'north',
                 'items':[{'name': 'satchel of rations', 'cost': 4, 'type': 'loot', 'effect':'20 food'},{'name': 'tattered battle standard', 'cost': 5, 'type':'armor','armor':3}],
                 'enemies':[]
+            },
+            38:{
+                'description':'You enter into some form of catacomb. Skeletons and graves line all the walls. In the middle there appears to be some kind of amulet sitting a top podium',
+                'exits': 'west',
+                'items':[],
+                'enemies':[{'name':'Lich','hp':300,
+                            'str':20,
+                            'dex':18,
+                            'wis':18,
+                            'gold':500,
+                            'weapon':{'name':'Aruers Bane','damage':20},
+                            'loot':[{'name': 'Aruers Amulet', 'type':'item'}]
+                            }
+
+                        ]
             }
         }
     }
@@ -109,6 +124,7 @@ enemies = {
         'wis':5,
         'gold':4,
         'weapon':{'name':'sword','damage':'4'},
+        'loot':[{'name':'bag of rations', 'effect': '3 food'}]
     },
     'nomad':{
         'name':'Nomad',
@@ -132,7 +148,10 @@ enemies = {
 }
 
 
-
+def checkWinCondition():
+    if('Aruers Amulet' in player['inventory']):
+        print("You have succeeded in your quest! A worthy hero indeed you appear to be!")
+        run = False
 
 
 def movement(direction):
@@ -354,6 +373,41 @@ def loadEnvironment():
     elif(tile == 9):
         dungeon(index)
 
+    northIndex = index - 10
+    eastIndex = index + 1
+    southIndex = index + 10
+    westIndex = index - 1
+
+    if(map[northIndex] == 0):
+        print("To your North is prairie.")
+    if(map[eastIndex] == 0):
+        print("To your East is prairie.")
+    if(map[southIndex] == 0):
+        print("To your South is prairie.")
+    if(map[westIndex] == 0):
+        print("To your West is prairie.")
+
+    if(map[northIndex] == 1):
+        print("To your North is a Forest.")
+    if(map[eastIndex] == 1):
+        print("To your East is a Forest.")
+    if(map[southIndex] == 1):
+        print("To your South is a Forest.")
+    if(map[westIndex] == 1):
+        print("To your West is a Forest.")
+
+    if(map[northIndex] == 2):
+        print("To your North is a Settlement.")
+    if(map[eastIndex] == 2):
+        print("To your East is a Settlement.")
+    if(map[southIndex] == 2):
+        print("To your South is a Settlement.")
+    if(map[westIndex] == 2):
+        print("To your West is a Settlement.")
+
+
+
+
 
 def combat(enemy):
     enemyTemp = {'name':enemy['name'],
@@ -377,9 +431,13 @@ def combat(enemy):
         enemyTemp['hp'] -= playerDamage
         player['hp'] -= damage
 
-    if(enemy['hp']):
+    if(enemyTemp['hp'] <= 0):
         print(enemyTemp['name'] + " is dead. ")
         print(enemyTemp['name'] + " drops " + str(enemyTemp['gold']) + " gold!")
+        if('loot' in enemy):
+            for i in enemy['loot']:
+                name = i['name']
+                player['inventory'][name] = i
         player['gold'] += enemyTemp['gold']
 
 
@@ -411,6 +469,18 @@ def getPlayerInput():
                 print("You cannot equip that.")
     elif(command.upper() == "HELP"):
         print("--------------------")
+    elif(command.upper().split(":")[0] == "USE"):
+        item = command.split(":")[1]
+        if(item in player['inventory']):
+            item = player['inventory'][item]
+            if('effect' in item):
+                quantity = item['effect'].split(" ")[0]
+                stat = item['effect'].split(" ")[1]
+                print("You gain " + str(quantity) + " " + str(stat))
+                player[stat] += int(quantity)
+                player['inventory'].pop(item['name'])
+    input()
+
 def playerState():
     global run
     if player['food'] <= 0:
@@ -428,6 +498,7 @@ def game():
     loadEnvironment()
     playerState()
     getPlayerInput()
+    checkWinCondition()
 
 
 
