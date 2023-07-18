@@ -12,8 +12,8 @@ player = {
     'food':4,
     'gold':10,
     'name':'',
-    'pos':74,
-    'inventory':{'bag of rations':{'name':'bag of rations', 'effect': '3 food'}},
+    'pos':17,
+    'inventory':{'bag of rations':{'name':'bag of rations', 'effect': '3 food'},'sword':{'name':'sword','damage':'4', 'type':'weapon'}},
     'weapon':{'name':'fist','damage':'1'},
     'armor':{}
 }
@@ -53,10 +53,37 @@ towns = {
                 'description': 'Most of the shelfs were stocked with a mess of goods ranging from common kitchen implements to rusty daggers. The owner is a portly fellow inspecting a jewl with great interest.',
                 'goods':{ 'dagger':{'name':'dagger','cost':4, 'damage': 2, 'type':'weapon'}, 'longsword': {'name': 'longsword', 'cost': 8, 'damage': 6, 'type': 'weapon'}}
                 }
-        }
-    }
+        },
+     },
+      18:{
+      'name': 'Wheatville',
+         'buildings': {
+             'Farmers Rest': {
+                 'name': 'Farmers Rest',
+                 'type': 'Inn',
+                 'description': 'The tavern is a simple wooden building, bustling with weary farmers seeking respite from their toil. The air is filled with the aroma of hearty meals and the sound of cheerful chatter. The innkeeper, a friendly middle-aged woman, welcomes you warmly and offers a seat by the fireplace.',
+                 'cost': 2
+             },
+             'Harvest Market': {
+                 'name': 'Harvest Market',
+                 'type': 'Store',
+                 'description': 'The market square is alive with activity, with stalls set up to display an array of freshly harvested produce. Farmers proudly showcase their fruits, vegetables, and homemade preserves. The market is bustling with customers, bargaining for the best prices and exchanging stories of the season\'s yield.',
+                 'goods': {
+                     'apples': {'name': 'apples', 'cost': 1, 'quantity': 'per pound', 'effect':'1 hp'},
+                     'carrots': {'name': 'carrots', 'cost': 0.5, 'quantity': 'per pound', 'effect':'0.5 food'},
+                     'honey': {'name': 'honey', 'cost': 3, 'quantity': 'per jar', 'effect':'2 hp'}
+                 }
+             },
+             'Carpenters Workshop': {
+                 'name': 'Carpenters Workshop',
+                 'type': 'Workshop',
+                 'description': 'The sound of sawing and hammering fills the air as you approach the carpenter\'s workshop. Skilled artisans craft furniture, tools, and wooden implements with great precision. The master carpenter, a grizzled old man with calloused hands, greets you with a nod and continues his meticulous work.',
+                 'services': ['repair', 'crafting']
+             }
+         }
+         }
 
-}
+    }
 
 
 dungeons = {
@@ -220,6 +247,7 @@ def town(index):
                         if(player['gold'] >= Inn['cost']):
                             player['hp'] = player['str'] * 2
                             print("You feel rested.")
+                            player['gold'] -= Inn['cost']
                         else:
                             print("You don't have enough money!")
                     elif(choice == '2'):
@@ -458,27 +486,28 @@ def getPlayerInput():
         movement('west')
     elif(command.upper() == "EAST"):
         movement('east')
-    elif(command.upper().split(" ")[0] == "EQUIP"):
-        item = command.split(" ")[1]
-        if(item in player['inventory']):
-            if(player['inventory'][item]['type']=="weapon"):
-                player['weapon'] = player['inventory'][item]
-            elif(player['inventory'][item]['type']=="armor"):
-                player['armor'] = player['inventory'][item]
-            else:
-                print("You cannot equip that.")
+    if(len(command.upper().split(":")) > 1):
+        if(command.upper().split(":")[0] == "EQUIP"):
+            item = command.split(":")[1]
+            if(item in player['inventory']):
+                if(player['inventory'][item]['type']=="weapon"):
+                    player['weapon'] = player['inventory'][item]
+                elif(player['inventory'][item]['type']=="armor"):
+                    player['armor'] = player['inventory'][item]
+                else:
+                    print("You cannot equip that.")
+        elif(command.upper().split(":")[0] == "USE"):
+            item = command.split(":")[1]
+            if(item in player['inventory']):
+                item = player['inventory'][item]
+                if('effect' in item):
+                    quantity = item['effect'].split(" ")[0]
+                    stat = item['effect'].split(" ")[1]
+                    print("You gain " + str(quantity) + " " + str(stat))
+                    player[stat] += int(quantity)
+                    player['inventory'].pop(item['name'])
     elif(command.upper() == "HELP"):
         print("--------------------")
-    elif(command.upper().split(":")[0] == "USE"):
-        item = command.split(":")[1]
-        if(item in player['inventory']):
-            item = player['inventory'][item]
-            if('effect' in item):
-                quantity = item['effect'].split(" ")[0]
-                stat = item['effect'].split(" ")[1]
-                print("You gain " + str(quantity) + " " + str(stat))
-                player[stat] += int(quantity)
-                player['inventory'].pop(item['name'])
     input()
 
 def playerState():
