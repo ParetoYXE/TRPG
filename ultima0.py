@@ -51,8 +51,8 @@ towns = {
                 'name':'Ballads Goods',
                 'type':'Store',
                 'description': 'Most of the shelfs were stocked with a mess of goods ranging from common kitchen implements to rusty daggers. The owner is a portly fellow inspecting a jewl with great interest.',
-                'goods':{ 
-                    'dagger':{'name':'dagger','cost':4, 'damage': 2, 'type':'weapon' ,'stat':'dex', 'quantity':1}, 
+                'goods':{
+                    'dagger':{'name':'dagger','cost':4, 'damage': 2, 'type':'weapon' ,'stat':'dex', 'quantity':1},
                     'longsword': {'name': 'longsword', 'cost': 8, 'damage': 6, 'type': 'weapon', 'stat':'str', 'quantity':1}}
                 }
         },
@@ -72,7 +72,7 @@ towns = {
                  'type': 'Store',
                  'description': 'The market square is alive with activity, with stalls set up to display an array of freshly harvested produce. Farmers proudly showcase their fruits, vegetables, and homemade preserves. The market is bustling with customers, bargaining for the best prices and exchanging stories of the season\'s yield.',
                  'goods': {
-                     'apples': {'name': 'apples', 'cost': 1, 'quantity': 'per pound', 'effect':'1 hp', 'quantity':1},
+                 'apples': {'name': 'life elixer', 'cost': 15, 'quantity': 'per pound', 'effect':'1 hp', 'quantity':1},
                      'carrots': {'name': 'carrots', 'cost': 0.5, 'quantity': 'per pound', 'effect':'0.5 food', 'quantity':1},
                      'honey': {'name': 'honey', 'cost': 3, 'quantity': 'per jar', 'effect':'2 hp', 'quantity':1}
                  }
@@ -378,7 +378,11 @@ def dungeon(index):
                     item =  room['items'][index]
                     if(item['name'] not in player['inventory']):
                         print("You find a " + item['name'])
-                        player['inventory'][item['name']] = item
+                        if item['name'] in player['inventory']:
+                            player['inventory'][item['name']]['quantity'] += 1
+                        else:
+                            player['inventory'][item['name']] = item
+                            room['items'].pop(index)
         elif(action.upper() == "EXIT"):
             if(index == dungeon['start']):
                 inDungeon = False
@@ -469,7 +473,6 @@ def combat(enemy):
         os.system('cls')
         print("------------------------------------------------------")
         printStats()
-        
         if(enemyTemp['weapon']['stat'] == 'str'):
             damage = random.randint(0,enemyTemp['str']) + enemyTemp['str'] / 5 + int(enemyTemp['weapon']['damage'])
         elif(enemyTemp['weapon']['stat'] == 'dex'):
@@ -478,7 +481,6 @@ def combat(enemy):
             playerDamage = random.randint(0,player['str']) + player['str'] / 5 + int(player['weapon']['damage'])
         elif(player['weapon']['stat'] == "dex"):
             playerDamage = random.randint(0,player['dex']) + player['dex'] / 5 + int(player['weapon']['damage'])
-        
         print(enemyTemp['name'] + " attacks you doing " + str(damage) + " damage.")
         print("You attack the " + enemyTemp['name'] + " doing " + str(playerDamage) + " damage.")
         choice = input("What do you want to do?")
