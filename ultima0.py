@@ -9,12 +9,12 @@ player = {
     'dex':0,
     'wis':0,
     'hp':0,
-    'food':10,
+    'food':4,
     'gold':10,
     'name':'',
-    'pos':74,
-    'inventory':{},
-    'weapon':{'name':'fist','damage':'1'},
+    'pos':17,
+    'inventory':{'bag of rations':{'name':'bag of rations', 'effect': '3 food', 'quantity':1},'sword':{'name':'sword','damage':'4', 'type':'weapon', 'stat':'str', 'quantity':1}},
+    'weapon':{'name':'fist','damage':'1', 'stat':'str'},
     'armor':{}
 }
 
@@ -51,12 +51,42 @@ towns = {
                 'name':'Ballads Goods',
                 'type':'Store',
                 'description': 'Most of the shelfs were stocked with a mess of goods ranging from common kitchen implements to rusty daggers. The owner is a portly fellow inspecting a jewl with great interest.',
-                'goods':{ 'dagger':{'name':'dagger','cost':4, 'damage': 2, 'type':'weapon'}, 'longsword': {'name': 'longsword', 'cost': 8, 'damage': 6, 'type': 'weapon'}}
+                'goods':{ 
+                    'dagger':{'name':'dagger','cost':4, 'damage': 2, 'type':'weapon' ,'stat':'dex', 'quantity':1}, 
+                    'longsword': {'name': 'longsword', 'cost': 8, 'damage': 6, 'type': 'weapon', 'stat':'str', 'quantity':1}}
                 }
-        }
-    }
+        },
+     },
+      18:{
+      'name': 'Wheatville',
+         'buildings': {
+             'Farmers Rest': {
+                 'name': 'Farmers Rest',
+                 'type': 'Inn',
+                 'description': 'The tavern is a simple wooden building, bustling with weary farmers seeking respite from their toil. The air is filled with the aroma of hearty meals and the sound of cheerful chatter. The innkeeper, a friendly middle-aged woman, welcomes you warmly and offers a seat by the fireplace.',
+                 'cost': 2,
+                 'rumors': ['Late into the moonlit nights, some farmers have claimed to hear faint whispers carried by the gentle breeze. They say that the old willow tree, standing tall at the edge of the nearby wheat fields, holds a hidden secret. Legend has it that beneath its roots lies a buried treasure from a forgotten time. Many have sought the treasure, but none have returned with it. Perhaps youll be the brave soul who uncovers the truth behind the whispers and unearths the long-lost riches of the old willow tree.']
+             },
+             'Harvest Market': {
+                 'name': 'Harvest Market',
+                 'type': 'Store',
+                 'description': 'The market square is alive with activity, with stalls set up to display an array of freshly harvested produce. Farmers proudly showcase their fruits, vegetables, and homemade preserves. The market is bustling with customers, bargaining for the best prices and exchanging stories of the season\'s yield.',
+                 'goods': {
+                     'apples': {'name': 'apples', 'cost': 1, 'quantity': 'per pound', 'effect':'1 hp', 'quantity':1},
+                     'carrots': {'name': 'carrots', 'cost': 0.5, 'quantity': 'per pound', 'effect':'0.5 food', 'quantity':1},
+                     'honey': {'name': 'honey', 'cost': 3, 'quantity': 'per jar', 'effect':'2 hp', 'quantity':1}
+                 }
+             },
+             'Carpenters Workshop': {
+                 'name': 'Carpenters Workshop',
+                 'type': 'Workshop',
+                 'description': 'The sound of sawing and hammering fills the air as you approach the carpenter\'s workshop. Skilled artisans craft furniture, tools, and wooden implements with great precision. The master carpenter, a grizzled old man with calloused hands, greets you with a nod and continues his meticulous work.',
+                 'services': ['repair', 'crafting']
+             }
+         }
+         }
 
-}
+    }
 
 
 dungeons = {
@@ -89,7 +119,7 @@ dungeons = {
             63: {
                 'description':'The room appears to be some kind of a make shift barracks. There are several torn bed rolls and weapons strewn about the room along with a collection of supplies and maps.',
                 'exits': 'north',
-                'items':[{'name': 'satchel of rations', 'cost': 4, 'type': 'loot', 'effect':'20 food'},{'name': 'tattered battle standard', 'cost': 5, 'type':'armor','armor':3}],
+                'items':[{'name': 'satchel of rations', 'cost': 4, 'type': 'loot', 'effect':'20 food', 'quantity':1},{'name': 'tattered battle standard', 'cost': 5, 'type':'armor','armor':3, 'quantity':1}],
                 'enemies':[]
             },
             38:{
@@ -115,6 +145,18 @@ dungeons = {
 
 }
 
+trainers = {
+
+    random.randint(-2,2) + 75:{
+        'name':'Wayne the Wizard',
+        'stat':'wis',
+        'cost': 10,
+        'lvl': 14,
+    }
+
+
+}
+
 enemies = {
     'bandit':{
         'name':'Bandit',
@@ -123,16 +165,17 @@ enemies = {
         'dex':8,
         'wis':5,
         'gold':4,
-        'weapon':{'name':'sword','damage':'4'},
+        'weapon':{'name':'sword','damage':'4', 'stat':'str', 'quantity':1},
+        'loot':[{'name':'bag of rations', 'effect': '3 food', 'quantity':1}]
     },
     'nomad':{
         'name':'Nomad',
         'hp':8,
         'str':12,
-        'dex':8,
+        'dex':13,
         'wis':3,
         'gold':2,
-        'weapon':{'name':'spear','damage':'5'},
+        'weapon':{'name':'spear','damage':'5', 'stat':'dex', 'quantity':1},
     },
     'lich servator':{
         'name':'Lich Servator',
@@ -141,7 +184,7 @@ enemies = {
         'dex':18,
         'wis':16,
         'gold':50,
-        'weapon':{'name':'Demon Blade','damage':'12'},
+        'weapon':{'name':'Demon Blade','damage':'12', 'stat':'str', 'quantity':1},
 
     }
 }
@@ -219,6 +262,7 @@ def town(index):
                         if(player['gold'] >= Inn['cost']):
                             player['hp'] = player['str'] * 2
                             print("You feel rested.")
+                            player['gold'] -= Inn['cost']
                         else:
                             print("You don't have enough money!")
                     elif(choice == '2'):
@@ -237,7 +281,10 @@ def town(index):
                         if player['gold'] >= Store['goods'][purchase]['cost']:
                             print("You purchased a " + purchase)
                             player['gold'] -= Store['goods'][purchase]['cost']
-                            player['inventory'][purchase] = Store['goods'][purchase]
+                            if purchase in player['inventory']:
+                                player['inventory'][purchase]['quantity'] += 1
+                            else:
+                                player['inventory'][purchase] = Store['goods'][purchase]
         elif(building == 'exit'):
             inTown = False
 
@@ -422,8 +469,16 @@ def combat(enemy):
         os.system('cls')
         print("------------------------------------------------------")
         printStats()
-        damage = random.randint(0,enemyTemp['str']) + enemyTemp['str'] / 5 + int(enemyTemp['weapon']['damage'])
-        playerDamage = random.randint(0,player['str']) + player['str'] / 5 + int(player['weapon']['damage'])
+        
+        if(enemyTemp['weapon']['stat'] == 'str'):
+            damage = random.randint(0,enemyTemp['str']) + enemyTemp['str'] / 5 + int(enemyTemp['weapon']['damage'])
+        elif(enemyTemp['weapon']['stat'] == 'dex'):
+            damage = random.randint(0,enemyTemp['dex']) + enemyTemp['dex'] / 5 + int(enemyTemp['weapon']['damage'])
+        if(player['weapon']['stat'] == "str"):
+            playerDamage = random.randint(0,player['str']) + player['str'] / 5 + int(player['weapon']['damage'])
+        elif(player['weapon']['stat'] == "dex"):
+            playerDamage = random.randint(0,player['dex']) + player['dex'] / 5 + int(player['weapon']['damage'])
+        
         print(enemyTemp['name'] + " attacks you doing " + str(damage) + " damage.")
         print("You attack the " + enemyTemp['name'] + " doing " + str(playerDamage) + " damage.")
         choice = input("What do you want to do?")
@@ -440,7 +495,29 @@ def combat(enemy):
         player['gold'] += enemyTemp['gold']
 
 
-
+def checkTrainer():
+    if(player['pos'] in trainers):
+        trainer = trainers[player['pos']]
+        choice = "0"
+        while(choice != "2"):
+            os.system("cls")
+            printStats()
+            print("You encounter a trainer by the name of " + trainer['name'])
+            print("They can raise your " + trainer['stat'] + " for " + str(trainer['cost']) + " gold")
+            print("1. Raise")
+            print("2. Exit")
+            choice = input(":")
+            if(choice == "1"):
+                if(player['gold'] >= trainer['cost']):
+                    stat = trainer['stat']
+                    if(player[stat]) > trainer['lvl']:
+                        print("You are too high a level.")
+                    else:
+                        print("Your stat was raised by 1!")
+                        player[stat] += 1
+                        player['gold'] -= player['gold']
+                else:
+                    print("You don't have enough gold!")
 
 
 def getPlayerInput():
@@ -457,17 +534,29 @@ def getPlayerInput():
         movement('west')
     elif(command.upper() == "EAST"):
         movement('east')
-    elif(command.upper().split(" ")[0] == "EQUIP"):
-        item = command.split(" ")[1]
-        if(item in player['inventory']):
-            if(player['inventory'][item]['type']=="weapon"):
-                player['weapon'] = player['inventory'][item]
-            elif(player['inventory'][item]['type']=="armor"):
-                player['armor'] = player['inventory'][item]
-            else:
-                print("You cannot equip that.")
+    if(len(command.upper().split(":")) > 1):
+        if(command.upper().split(":")[0] == "EQUIP"):
+            item = command.split(":")[1]
+            if(item in player['inventory']):
+                if(player['inventory'][item]['type']=="weapon"):
+                    player['weapon'] = player['inventory'][item]
+                elif(player['inventory'][item]['type']=="armor"):
+                    player['armor'] = player['inventory'][item]
+                else:
+                    print("You cannot equip that.")
+        elif(command.upper().split(":")[0] == "USE"):
+            item = command.split(":")[1]
+            if(item in player['inventory']):
+                item = player['inventory'][item]
+                if('effect' in item):
+                    quantity = item['effect'].split(" ")[0]
+                    stat = item['effect'].split(" ")[1]
+                    print("You gain " + str(quantity) + " " + str(stat))
+                    player[stat] += int(quantity)
+                    player['inventory'].pop(item['name'])
     elif(command.upper() == "HELP"):
         print("--------------------")
+
 def playerState():
     global run
     if player['food'] <= 0:
@@ -483,6 +572,7 @@ def game():
     print("------------------------------------------------------")
     printStats()
     loadEnvironment()
+    checkTrainer()
     playerState()
     getPlayerInput()
     checkWinCondition()
